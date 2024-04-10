@@ -1,0 +1,26 @@
+time : total profit over all customers
+======================
+time 0: 138.73
+time 1: 239.3
+time 2: 128.62
+time 3: 191.41
+time 4: 214.28
+time 5: 180.29
+time 6: 243.33
+time 7: 284.45
+time 8: 294.7
+time 9: 228.06
+time 10: 273.22
+time 11: 202.56
+time 12: 185.05
+time 13: 312.15
+time 14: 89.32
+time 15: -217.78
+time 16: 343.49
+time 17: 464.41
+time 18: 77.16
+time 19: 353.3
+time 20: 114.02
+time 21: 177.24
+time 22: 352.22
+time 23: 271.57
