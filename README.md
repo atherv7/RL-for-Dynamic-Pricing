@@ -13,7 +13,6 @@ The results using the default test cases are given in the directories of the nam
 prices of the electricity for every time section per time period. It plots the dissatisfaction of the customers per time period, the total profit per time period, 
 and the overall energy consumption of the customers per time period. 
 The test contains three customers, with varying "attitudes" towards price for electricity. 
-------------------------------------------------------------------------------------------------------------------------------------------------------
 Another test folder is called "performance_of_model_over_iterations," which checks the daily total profit and the daily average dissatsifaction over all 
 customers for the best price decided by the model with 1000 iterations. It contains the plot of these values per 1000 iterations and writes the values 
 in the txt files. 
