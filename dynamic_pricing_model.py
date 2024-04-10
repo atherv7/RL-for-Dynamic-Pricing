@@ -3,6 +3,11 @@ import grid_operator as go
 import service_provider as sp
 import random
 class DynamicPricingModel:
+    # initializer takes in
+    # the number of time sections in a time period: time_length (default=24 (represents one day))
+    # iterations for the training loop: iterations (default=1)
+    # termination delta: termination_delta (default=0.0000000001)
+    # if you want to display reward after every retail price chosen = display (default=False) 
     def __init__(self, time_length=24, iterations=1, termination_delta=0.0000000001, display=False):
         self.time_length = time_length
         self.customers = []
@@ -15,23 +20,28 @@ class DynamicPricingModel:
         self.daily_avg_diss_p_iter = []
         self.daily_tot_prof_p_iter = []
 
+    # add a customer to the problem space with the specific parameters required
+    # by the object initializer 
     def add_customer(self, an, bn, dmin, dmax, energy_demands, elastic_coeffs):
         customer = cu.Customer(an, bn, dmin, dmax, energy_demands, elastic_coeffs)
         self.customers.append(customer)
         self.total_customers += 1
 
+    # add a grid operator to the problem space (only allows for one) 
     def add_grid_operator(self, wholesale_prices):
         if self.grid_op != None:
             print("A grid operator is already initialized")
             return 
         self.grid_op = go.Grid_Operator(wholesale_prices)
 
+    # add a service provider (agent) to the problem space (only allows for one) 
     def add_service_provider(self, k1, k2, min_wholesale, max_wholesale, customers, customer_demands, profit_importance, N0):
         if self.service_provider != None:
             print("A service provider is already initialized")
             return 
         self.service_provider = sp.Service_Provider(k1, k2, min_wholesale, max_wholesale, customers, customer_demands, profit_importance, N0)
 
+    # function trains the agent, and is only executed if there is at least one customer, grid operator, and service provider 
     def train(self):
         if self.total_customers == 0:
             raise Exception("No customers initialized")
@@ -79,6 +89,11 @@ class DynamicPricingModel:
 ##                    self.daily_tot_prof_p_iter.append(daily_prof) 
             return best_q_values, best_time_prices  
 
+    # checks if the q values of the previous run and the current q values
+    # have a difference lower than the termination delta.
+    # if all the values on the table are less than the termination delta
+    # the training loop will
+    # otherwise it continues 
     def check_passing_condition(self, curr, prev):
         for i in range(len(curr)):
             for j in range(len(curr[i])):
@@ -86,6 +101,8 @@ class DynamicPricingModel:
                     return False
         return True
 
+    # given an array of optimal prices, it returns an array of total consumption
+    # of each customer for a time period 
     def check_total_consumption(self, best_prices):
         total_consumption = [[0] * self.time_length for _ in range(self.total_customers)]
         for customer in range(self.total_customers):
@@ -98,6 +115,8 @@ class DynamicPricingModel:
                 total_consumption[customer][time] = cust.consumption_t(best_price, wholesale_t, energy_demand, elasticity_t)
         return total_consumption
 
+    # gets the total profit based of optimal prices and energy consumption of all customers
+    # for the given optimal prices 
     def check_total_profit(self, best_prices, total_consumption):
         total_profit_for_time = [0] * self.time_length
         for time in range(self.time_length):
@@ -108,6 +127,7 @@ class DynamicPricingModel:
             total_profit_for_time[time] = round(profit_over_customers,2) 
         return total_profit_for_time
 
+    # gets the average dissatisfaction over all customers given the total consumption of all customers 
     def average_dissatisfaction(self, total_consumption):
         avg_dis_time = [0] * self.time_length
         for time in range(self.time_length):
@@ -120,7 +140,7 @@ class DynamicPricingModel:
             avg_dis_time[time] = total_diss/self.total_customers
         return avg_dis_time 
         
-
+    # this array transfers the values of the curr array to the elements of the prev array
     def transfer_arrays(self, curr, prev):
         for i in range(len(prev)):
             for j in range(len(prev[i])):
